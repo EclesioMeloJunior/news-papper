@@ -12,7 +12,10 @@ describe('NewsService', () => {
     service = module.get<NewsService>(NewsService);
   });
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
+  describe('[Method] getNews', () => {
+    it('When called should return a list of news', () => {
+      const news = service.getNews();
+      expect(news).toBeGreaterThanOrEqual(0);
+    });
   });
 });
