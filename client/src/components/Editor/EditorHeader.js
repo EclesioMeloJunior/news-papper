@@ -6,7 +6,7 @@ const EditorReader = () => {
 	return (
 		<React.Fragment>
 			<h5 className="display-4 font-italic">News Papper Editor</h5>
-			<p className="lead my-3">
+			<p className="lead mb-4">
 				Escreva suas histórias, notícias, criticas, opiniões e dicas.
 			</p>
 		</React.Fragment>

@@ -22,7 +22,7 @@ export class NewsController {
 
   @Get()
   async getNews(@Res() response) {
-    const news = this.newsService.getNews();
+    const news = await this.newsService.getNews();
     return response.status(HttpStatus.OK).json(news);
   }
 
@@ -48,10 +48,10 @@ export class NewsController {
     return response.status(HttpStatus.CREATED).json(news);
   }
 
-  @Put()
+  @Put(':newsId')
   async editNews(
     @Res() response,
-    @Query('newsId', new ValidadeObjectId()) newsId,
+    @Param('newsId', new ValidadeObjectId()) newsId,
     @Body() createNewsDTO: CreateNewsDTO,
   ) {
     const news = await this.newsService.editNews(newsId, createNewsDTO);
@@ -60,10 +60,10 @@ export class NewsController {
     return response.status(HttpStatus.OK).json(news);
   }
 
-  @Delete()
+  @Delete(':newsId')
   async deleteNews(
     @Res() response,
-    @Query('newsId', new ValidadeObjectId()) newsId,
+    @Param('newsId', new ValidadeObjectId()) newsId,
   ) {
     const deletedNews = await this.newsService.deleteNews(newsId);
     if (!deletedNews) throw new NotFoundException('News not found');

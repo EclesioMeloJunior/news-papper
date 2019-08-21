@@ -37,6 +37,9 @@ const Header = props => (
 							<path d="M21 21l-5.2-5.2" />
 						</svg>
 					</a>
+					<Link className="btn btn-sm btn-outline-primary mr-2" to="/my/news">
+						Minhas News
+					</Link>
 					<Link className="btn btn-sm btn-outline-primary mr-2" to="/escrever">
 						Escrever
 					</Link>
