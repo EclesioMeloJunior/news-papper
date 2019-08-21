@@ -139,8 +139,11 @@ h6 {
 	grid-template-columns: 100%;
 }
 
-.public-DraftEditor-content {
-	min-height: 110px;
+.ql-editor {
+	min-height: 400px !important;
+	overflow: hidden;
+	overflow-y: auto;
+	overflow-x: auto;
 }
 
 /*

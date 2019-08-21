@@ -1,70 +1,142 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { connect } from "react-redux";
 import Form from "react-bootstrap/Form";
 import Col from "react-bootstrap/Col";
-import RichTextEditor from "react-rte";
+import Button from "react-bootstrap/Button";
+import Popover from "react-bootstrap/Popover";
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import ReactQuill from "react-quill";
+import { Field, reduxForm, change, formValueSelector } from "redux-form";
+import { withRouter } from "react-router-dom";
+import { ReduxFormControl } from "../../containers/ReduxFormControls";
+import agent from "../../agent";
 
-const EditorForm = () => {
-	const [text, setText] = useState(RichTextEditor.createEmptyValue());
+const EditorForm = props => {
+	const { handleSubmit, initialValues, change, history } = props;
+	const [categories, setCategories] = useState([]);
 
-	const toolbarConfig = {
-		// Optionally specify the groups to display (displayed in the order listed).
-		display: [
-			"INLINE_STYLE_BUTTONS",
-			"BLOCK_TYPE_BUTTONS",
-			"LINK_BUTTONS",
-			"BLOCK_TYPE_DROPDOWN",
-			"HISTORY_BUTTONS"
-		],
-		INLINE_STYLE_BUTTONS: [
-			{ label: "Bold", style: "BOLD", className: "custom-css-class" },
-			{ label: "Italic", style: "ITALIC" },
-			{ label: "Underline", style: "UNDERLINE" }
-		],
-		BLOCK_TYPE_DROPDOWN: [
-			{ label: "Normal", style: "unstyled" },
-			{ label: "Heading Large", style: "header-one" },
-			{ label: "Heading Medium", style: "header-two" },
-			{ label: "Heading Small", style: "header-three" }
-		],
-		BLOCK_TYPE_BUTTONS: [
-			{ label: "UL", style: "unordered-list-item" },
-			{ label: "OL", style: "ordered-list-item" }
-		]
+	const handleNewsRemove = async newsId => {
+		try {
+			await agent.delete(`news/${newsId}`);
+			history.push("/my/news");
+		} catch (err) {
+			console.log(err);
+		}
 	};
+
+	useEffect(() => {
+		agent
+			.get("news/categories")
+			.then(categoriesResponse => categoriesResponse.data)
+			.then(setCategories);
+	}, []);
 
 	return (
 		<React.Fragment>
-			<Form>
+			<Form onSubmit={handleSubmit} className="mb-5">
 				<Form.Row>
 					<Col>
 						<Form.Label>Título</Form.Label>
-						<Form.Control placeholder="Informe um título para o seu texto" />
+						<Field
+							type="hidden"
+							name="newsId"
+							component={ReduxFormControl}
+							placeholder="Informe um título para o seu texto"
+						/>
+
+						<Field
+							type="text"
+							name="title"
+							component={ReduxFormControl}
+							placeholder="Informe um título para o seu texto"
+						/>
 						<small id="emailHelp" className="form-text text-muted">
 							Seu título também será usado nas otimizações de busca.
 						</small>
 					</Col>
 					<Col>
 						<Form.Label>Categoria</Form.Label>
-						<Form.Control as="select">
-							<option selected disabled>
+						<Field as="select" name="category" component={ReduxFormControl}>
+							<option key={-1} value={-1}>
 								Selecione uma categoria
 							</option>
-							<option>1</option>
-							<option>2</option>
-							<option>3</option>
-							<option>4</option>
-							<option>5</option>
-						</Form.Control>
+							{categories.map((category, categoryIdx) => (
+								<option key={categoryIdx} value={category}>
+									{category}
+								</option>
+							))}
+						</Field>
 					</Col>
 				</Form.Row>
-				<Form.Row className="mt-2 mb-5">
+				<Form.Row className="mt-2">
 					<Col>
 						<Form.Label>Texto</Form.Label>
-						<RichTextEditor
-							toolbarConfig={toolbarConfig}
-							value={text}
-							onChange={value => setText(value)}
+
+						<Field
+							name="description"
+							component={({ input }) => {
+								return (
+									<ReactQuill
+										{...input}
+										onChange={(newValue, delta, source) => {
+											if (source === "user") {
+												input.onChange(newValue);
+											}
+										}}
+										onBlur={(range, source, quill) => {
+											input.onBlur(quill.getHTML());
+										}}
+									/>
+								);
+							}}
 						/>
+					</Col>
+				</Form.Row>
+				<Form.Row className="mt-2">
+					<Col>
+						<Field
+							type="checkbox"
+							name="public"
+							label="Este texto ficará público?"
+							component={({ input, meta, ...props }) => (
+								<Form.Group controlId="formBasicChecbox">
+									<Form.Check {...props} {...input} />
+								</Form.Group>
+							)}
+						/>
+					</Col>
+				</Form.Row>
+				<Form.Row className="mt-2">
+					<Col>
+						<Button className="mr-5" type="submit" variant="outline-success">
+							Salvar
+						</Button>
+
+						{initialValues && initialValues.newsId && (
+							<OverlayTrigger
+								trigger="focus"
+								placement="right"
+								overlay={
+									<Popover id="popover-basic">
+										<Popover.Title>Excluir esta News?</Popover.Title>
+										<Popover.Content>
+											Você irá excluir: <strong>{initialValues.title}</strong>.
+											Tem certeza?
+											<hr />
+											<Button
+												onClick={() => handleNewsRemove(initialValues.newsId)}
+												size="sm"
+												variant="secondary"
+											>
+												Sim, tenho!
+											</Button>
+										</Popover.Content>
+									</Popover>
+								}
+							>
+								<Button variant="danger">Excluir</Button>
+							</OverlayTrigger>
+						)}
 					</Col>
 				</Form.Row>
 			</Form>
@@ -72,4 +144,38 @@ const EditorForm = () => {
 	);
 };
 
-export default EditorForm;
+const validate = values => {
+	const errors = {};
+
+	if (!values.title) {
+		errors.title = "Informe o título do seu texto.";
+	}
+
+	if (!values.category) {
+		errors.category = "A categoria é necessária.";
+	}
+
+	return errors;
+};
+
+const EDITOR_FORM_NAME = "editor-form";
+
+const EditorFormWrapper = reduxForm({
+	form: EDITOR_FORM_NAME,
+	validate
+});
+
+const EditorFormWithRouter = withRouter(EditorForm);
+
+const mapDispatchToProps = dispatch => ({
+	change: (field, value) => dispatch(change(EDITOR_FORM_NAME, field, value))
+});
+
+const mapStateToProps = state => ({
+	initialValues: state.news.formInitialValues
+});
+
+export default connect(
+	mapStateToProps,
+	mapDispatchToProps
+)(EditorFormWrapper(EditorFormWithRouter));

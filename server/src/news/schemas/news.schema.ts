@@ -3,13 +3,9 @@ import * as mongoose from 'mongoose';
 export const NewsSchema = new mongoose.Schema(
   {
     title: String,
-    author: String,
+    public: Boolean,
     description: String,
-    categories: [
-      {
-        type: String,
-      },
-    ],
+    category: String,
   },
   {
     timestamps: true,
