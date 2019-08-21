@@ -14,6 +14,7 @@ import {
 import { NewsService } from './news.service';
 import { CreateNewsDTO } from './dto/create-news.dto';
 import { ValidadeObjectId } from '../shared/pipes/validate-object-id';
+import { getEnabledCategories } from 'trace_events';
 
 @Controller('news')
 export class NewsController {
@@ -23,6 +24,12 @@ export class NewsController {
   async getNews(@Res() response) {
     const news = this.newsService.getNews();
     return response.status(HttpStatus.OK).json(news);
+  }
+
+  @Get('categories')
+  getCategories(@Res() response) {
+    const categories = this.newsService.getCategories();
+    return response.status(HttpStatus.OK).json(categories);
   }
 
   @Get(':newsId')

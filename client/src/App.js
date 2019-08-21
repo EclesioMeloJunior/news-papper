@@ -1,19 +1,19 @@
 import React from "react";
 import "./App.css";
-import Container from "react-bootstrap/Container";
-import Header from "./components/Header";
-import Categories from "./components/Categories";
-import TopNews from "./components/TopNews";
+import { BrowserRouter as Router, Route } from "react-router-dom";
+import Home from "./components/Home";
+import News from "./components/News";
+import Read from "./components/Read";
+import Editor from "./components/Editor";
 
 function App() {
 	return (
-		<React.Fragment>
-			<Container>
-				<Header />
-				<Categories />
-				<TopNews />
-			</Container>
-		</React.Fragment>
+		<Router>
+			<Route path="/" exact component={Home} />
+			<Route path="/news/:category" exact component={News} />
+			<Route path="/read/:newsId" exact component={Read} />
+			<Route path="/escrever" exact component={Editor} />
+		</Router>
 	);
 }
 

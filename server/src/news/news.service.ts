@@ -8,6 +8,20 @@ import { CreateNewsDTO } from './dto/create-news.dto';
 export class NewsService {
   constructor(@InjectModel('News') private readonly newsModel: Model<News>) {}
 
+  getCategories(): string[] {
+    return [
+      'World',
+      'Business',
+      'Technology',
+      'Culture',
+      'Design',
+      'Politcs',
+      'Science',
+      'Health',
+      'Travel',
+    ];
+  }
+
   async getNews(): Promise<News[]> {
     const news = await this.newsModel.find().exec();
     return news;
