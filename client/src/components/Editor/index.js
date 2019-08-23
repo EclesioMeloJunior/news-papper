@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from "react";
 import withTemplate from "../../containers/withTemplate";
+import { compose } from "redux";
 import EditorReader from "./EditorHeader";
 import EditorForm from "./EditorForm";
 import agent from "../../agent";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { NEWS_TYPE } from "../../redux/news";
+import withAuthentication from "../../containers/withAuthentication";
+import { usePromise } from "bananahooks";
 
 const Editor = props => {
 	const { editorFormInitialValues, history } = props;
@@ -71,11 +74,12 @@ const mapDispatchToProps = dispatch => ({
 		dispatch({ type: NEWS_TYPE.FORM_INITIAL_VALUES, payload: values })
 });
 
-const EditorWithTemplate = withTemplate(Editor);
-const EditorWithRouter = withRouter(EditorWithTemplate);
-const EditorWithConnect = connect(
-	null,
-	mapDispatchToProps
-)(EditorWithRouter);
-
-export default EditorWithConnect;
+export default compose(
+	withRouter,
+	withAuthentication,
+	withTemplate,
+	connect(
+		null,
+		mapDispatchToProps
+	)
+)(Editor);

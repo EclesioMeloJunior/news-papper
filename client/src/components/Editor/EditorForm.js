@@ -10,10 +10,16 @@ import { Field, reduxForm, change, formValueSelector } from "redux-form";
 import { withRouter } from "react-router-dom";
 import { ReduxFormControl } from "../../containers/ReduxFormControls";
 import agent from "../../agent";
+import { usePromise } from "bananahooks";
+
+const fetchCategories = async () => {
+	const categoriesResponse = await agent.get("news/categories");
+	return categoriesResponse.data;
+};
 
 const EditorForm = props => {
 	const { handleSubmit, initialValues, change, history } = props;
-	const [categories, setCategories] = useState([]);
+	const [categories, error, pending] = usePromise(fetchCategories, []);
 
 	const handleNewsRemove = async newsId => {
 		try {
@@ -23,13 +29,6 @@ const EditorForm = props => {
 			console.log(err);
 		}
 	};
-
-	useEffect(() => {
-		agent
-			.get("news/categories")
-			.then(categoriesResponse => categoriesResponse.data)
-			.then(setCategories);
-	}, []);
 
 	return (
 		<React.Fragment>
@@ -60,11 +59,14 @@ const EditorForm = props => {
 							<option key={-1} value={-1}>
 								Selecione uma categoria
 							</option>
-							{categories.map((category, categoryIdx) => (
-								<option key={categoryIdx} value={category}>
-									{category}
-								</option>
-							))}
+
+							{!pending &&
+								!error &&
+								categories.map((category, categoryIdx) => (
+									<option key={categoryIdx} value={category}>
+										{category}
+									</option>
+								))}
 						</Field>
 					</Col>
 				</Form.Row>

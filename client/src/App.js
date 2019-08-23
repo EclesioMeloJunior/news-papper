@@ -8,6 +8,7 @@ import News from "./components/News";
 import Read from "./components/Read";
 import Editor from "./components/Editor";
 import MyNews from "./components/News/MyNews";
+import Authentication from "./components/Authentication";
 
 import "react-quill/dist/quill.snow.css";
 
@@ -16,6 +17,7 @@ function App() {
 		<Provider store={store}>
 			<Router>
 				<Route path="/" exact component={Home} />
+				<Route path="/login" exact component={Authentication} />
 				<Route path="/news/:category" exact component={News} />
 				<Route path="/read/:newsId" exact component={Read} />
 				<Route path="/escrever" exact component={Editor} />

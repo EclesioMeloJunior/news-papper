@@ -2,15 +2,15 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import agent from "../../agent";
 
-const Categories = props => {
-	const [categories, setCategories] = useState([]);
+import { usePromise } from "bananahooks";
 
-	useEffect(() => {
-		agent
-			.get("news/categories")
-			.then(categoriesResponse => categoriesResponse.data)
-			.then(setCategories);
-	}, []);
+const fetchCategories = async () => {
+	const categoriesResponse = await agent.get("news/categories");
+	return categoriesResponse.data;
+};
+
+const Categories = () => {
+	const [categories] = usePromise(fetchCategories, []);
 
 	return (
 		<div className="nav-scroller py-1 mb-2">

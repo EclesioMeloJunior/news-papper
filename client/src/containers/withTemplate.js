@@ -2,6 +2,7 @@ import React from "react";
 import Header from "../components/Header";
 import Container from "react-bootstrap/Container";
 import Footer from "../components/Footer";
+import Categories from "../components/Categories";
 
 const withTemplate = Component => props => (
 	<React.Fragment>
@@ -9,6 +10,7 @@ const withTemplate = Component => props => (
 			<main>
 				<Container>
 					<Header />
+					<Categories />
 					<Component {...props} />
 				</Container>
 			</main>
