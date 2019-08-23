@@ -6,6 +6,21 @@
 **[Backend]** NodeJS (NestJS)
 **[Database]** MongoDB
 
+--- 
+
+A estrutura de pastas é relativamente simples:
+
+````js
+|client (frontend)
+|project (escopos, ideias...)
+|server (backend)
+````
+
+````js
+cd server && npm i && npm start
+cd client && npm i && npm start
+````
+
 A ideia é ser um local no qual você poste notícias, opiniões, criticas ... ou seja textos em geral (alá medium kk).
 Porém ao invês de receber claps terá:
   - **highs** esta ação será utilizada caso goste do texto, então o criado daquele texto ganhará moedinhas se o pessoal gostar.
